@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="ForgeMind AI — Industrial AI Assistant powered by LangGraph and RAG. Chat with documents, search the web, and get intelligent answers." />
+  <title>ForgeMind AI — Industrial AI Assistant</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Preconnect for Google Fonts speed -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+</head>
+<body>
+
+<!-- =====================================================================
+     APP ROOT
+     ===================================================================== -->
+<div id="app">
+
+  <!-- ==========================================================
+       HEADER
+       ========================================================== -->
+  <header id="header" role="banner">
+    <div class="header-logo" aria-hidden="true">🧠</div>
+    <div class="header-text">
+      <h1>ForgeMind AI</h1>
+      <p>Industrial AI Assistant</p>
+    </div>
+    <div class="header-status" id="header-status" aria-live="polite">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-label">Checking...</span>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       MAIN BODY (sidebar + chat)
+       ========================================================== -->
+  <div id="main-body">
+
+    <!-- ======================================================
+         LEFT SIDEBAR
+         ====================================================== -->
+    <aside id="sidebar" aria-label="Sidebar">
+
+      <!-- Upload section -->
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Upload PDF</div>
+
+        <!-- Clickable upload zone triggers the modal -->
+        <div class="upload-zone" id="sidebar-upload-zone" role="button" tabindex="0"
+             aria-label="Upload PDF document" title="Click to upload a PDF">
+          <span class="upload-icon">📄</span>
+          <p><strong>Click to upload</strong><br/>PDF files only</p>
+        </div>
+      </div>
+
+      <!-- Documents list -->
+      <div class="docs-list-wrapper">
+        <div class="docs-list-title">Uploaded Documents</div>
+        <ul class="docs-list" id="docs-list" aria-label="Uploaded PDF documents">
+          <li class="docs-empty" id="docs-empty">
+            <span class="empty-icon">📂</span>
+            No documents yet.<br/>Upload a PDF to get started.
+          </li>
+        </ul>
+      </div>
+
+      <!-- Bottom actions -->
+      <div class="sidebar-actions">
+        <button class="btn btn-danger" id="clear-chat-btn" title="Clear all chat messages">
+          🗑️ Clear Chat
+        </button>
+      </div>
+    </aside>
+
+    <!-- ======================================================
+         CHAT AREA
+         ====================================================== -->
+    <main id="chat-area" aria-label="Chat area">
+
+      <!-- Welcome screen (shown when no messages) -->
+      <div id="welcome-screen" aria-label="Welcome screen">
+        <div class="welcome-logo" aria-hidden="true">🧠</div>
+        <h2>Welcome to ForgeMind AI</h2>
+        <p>
+          I'm an industrial AI assistant powered by RAG and LangGraph.
+          Upload a PDF and ask me anything about it, or ask me to search the web.
+        </p>
+        <div class="suggestion-chips" role="list" aria-label="Suggestion prompts">
+          <button class="chip" role="listitem" data-prompt="What is this document about?">
+            📄 Summarize my document
+          </button>
+          <button class="chip" role="listitem" data-prompt="What are the key findings in the uploaded PDF?">
+            🔍 Key findings
+          </button>
+          <button class="chip" role="listitem" data-prompt="Search the web for the latest AI research papers.">
+            🌐 Search the web
+          </button>
+          <button class="chip" role="listitem" data-prompt="Explain the main concepts covered in the document.">
+            💡 Explain concepts
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages container (hidden initially, shown when messages exist) -->
+      <div id="messages" role="log" aria-live="polite" aria-label="Chat messages" style="display:none;"></div>
+
+      <!-- Thinking indicator row -->
+      <div id="thinking-row" aria-live="polite" aria-label="AI is thinking" role="status">
+        <div class="msg-avatar ai-avatar" aria-hidden="true">🧠</div>
+        <div class="thinking-bubble">
+          <span>ForgeMind is thinking</span>
+          <div class="thinking-dots" aria-hidden="true">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Input bar -->
+      <div id="input-bar">
+        <div class="input-wrapper">
+          <textarea
+            id="message-input"
+            rows="1"
+            placeholder="Ask anything... (Shift+Enter for new line)"
+            aria-label="Chat message input"
+            autocomplete="off"
+            spellcheck="true"
+          ></textarea>
+          <button id="send-btn" aria-label="Send message" title="Send (Enter)">
+            <!-- Paper plane icon (inline SVG — no external deps) -->
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          </button>
+        </div>
+        <p class="input-hint">Enter to send &nbsp;·&nbsp; Shift+Enter for new line</p>
+      </div>
+
+    </main>
+  </div><!-- /#main-body -->
+
+</div><!-- /#app -->
+
+<!-- ==========================================================
+     UPLOAD MODAL
+     ========================================================== -->
+<div class="modal-overlay" id="upload-modal" role="dialog"
+     aria-modal="true" aria-labelledby="modal-title-text">
+  <div class="modal-card">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title-text">📄 Upload PDF</span>
+      <button class="modal-close" id="modal-close-btn" aria-label="Close upload dialog">✕</button>
+    </div>
+
+    <!-- Drop zone (also triggers file picker) -->
+    <div class="modal-drop-zone" id="modal-drop-zone"
+         role="button" tabindex="0" aria-label="Drop a PDF here or click to browse">
+      <span class="drop-icon">📂</span>
+      <p>Drop a PDF here or <span>browse files</span></p>
+    </div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="pdf-input" accept=".pdf" aria-label="PDF file input" />
+
+    <!-- File preview (shown after file is chosen) -->
+    <div class="modal-file-preview" id="modal-file-preview" style="display:none;">
+      <span class="file-icon">📄</span>
+      <span class="file-name" id="modal-file-name">—</span>
+      <span class="file-size" id="modal-file-size">—</span>
+    </div>
+
+    <!-- Upload progress/status -->
+    <div class="modal-upload-status" id="modal-upload-status"></div>
+
+    <div class="modal-actions">
+      <button class="btn btn-ghost" id="modal-cancel-btn">Cancel</button>
+      <button class="btn btn-primary" id="modal-upload-btn" disabled>Upload PDF</button>
+    </div>
+  </div>
+</div>
+
+<!-- ==========================================================
+     TOAST
+     ========================================================== -->
+<div id="toast" role="alert" aria-live="assertive"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
