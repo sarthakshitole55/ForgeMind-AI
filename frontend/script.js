@@ -21,7 +21,7 @@
    ============================================================ */
 
 /** Change this if your backend runs on a different host/port */
-const BACKEND_URL = 'https://forgemind-ai-production-25e8.up.railway.app"';
+const BACKEND_URL = 'https://forgemind-ai-production-25e8.up.railway.app';
 
 /* ============================================================
    DOM REFERENCES
