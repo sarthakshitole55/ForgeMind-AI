@@ -26,8 +26,16 @@ class DocumentIndexer:
                 "Please use a text-based PDF."
             )
 
-        logger.info(f"Generated {len(chunks)} chunks from {len(documents)} pages. Storing in ChromaDB and BM25...")
-        self.store.add_documents(chunks)
+        logger.info(f"Generated {len(chunks)} chunks from {len(documents)} pages. Storing in ChromaDB...")
+        BATCH_SIZE = 32
+
+        for i in range(0, len(chunks), BATCH_SIZE):
+            batch = chunks[i:i + BATCH_SIZE]
+            logger.info(
+                f"Indexing batch {i // BATCH_SIZE + 1} "
+                f"of {(len(chunks) + BATCH_SIZE - 1) // BATCH_SIZE}"
+            )
+            self.store.add_documents(batch)
         
 
         return {
