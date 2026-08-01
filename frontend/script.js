@@ -21,7 +21,7 @@
    ============================================================ */
 
 /** Change this if your backend runs on a different host/port */
-const BACKEND_URL = 'http://localhost:8000';
+const BACKEND_URL = 'https://forgemind-ai-production-25e8.up.railway.app"';
 
 /* ============================================================
    DOM REFERENCES
@@ -183,7 +183,7 @@ function bindEvents() {
    ============================================================ */
 async function checkHealth() {
   try {
-    const res = await fetch(`${BACKEND_URL}/`, { method: 'GET' });
+    const res = await fetch(`${BACKEND_URL}/health`, { method: 'GET' });
     if (res.ok) {
       setStatus('online', 'Backend online');
     } else {
