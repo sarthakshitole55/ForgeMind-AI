@@ -18,7 +18,7 @@ class Settings(BaseSettings):
 
     #Default AI Providers
     DEFAULT_PROVIDER: str = "groq"
-    DEFAULT_MODEL: str = "llama-3.3-70b-versatile"
+    DEFAULT_MODEL: str = "openai/gpt-oss-120b"
     DEFAULT_EMBEDDING:str="bge"
 
 
