@@ -7,8 +7,8 @@ from app.services.llm_services import LLMService
 
 class RouterAgent:
 
-    def __init__(self):
-        self.llm = LLMService()
+    def __init__(self, llm_service: LLMService | None = None):
+        self.llm = llm_service or LLMService()
 
     def route(self, question: str) -> RouteDecision:
 
@@ -18,9 +18,12 @@ class RouterAgent:
             .with_structured_output(RouteDecision)
         )
 
-        return structured_llm.invoke(
-            [
-                SystemMessage(content=ROUTER_PROMPT),
-                HumanMessage(content=question),
-            ]
-        )
+        def _invoke():
+            return structured_llm.invoke(
+                [
+                    SystemMessage(content=ROUTER_PROMPT),
+                    HumanMessage(content=question),
+                ]
+            )
+
+        return self.llm.invoke_with_retry(_invoke, operation_name="Router routing")

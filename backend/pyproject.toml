@@ -17,6 +17,7 @@ dependencies = [
     "langchain-huggingface>=1.2.2",
     "langchain-tavily>=0.2.18",
     "langchain-text-splitters>=1.1.2",
+    "langfuse>=4.15.2",
     "langgraph>=1.2.9",
     "pydantic>=2.13.4",
     "pydantic-settings>=2.14.2",
