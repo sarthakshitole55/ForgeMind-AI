@@ -34,8 +34,9 @@ jobs:
           python-version: "3.12"
 
       - name: Install locked dependencies
+        working-directory: backend
         run: |
-          uv sync --project backend --locked
+          uv sync --locked
 
       - name: Run deterministic test suite
         env:
